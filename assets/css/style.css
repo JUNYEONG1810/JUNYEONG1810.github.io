@@ -558,3 +558,244 @@ button.btn {
 .license-card .stat-num {
   margin-top: auto;
 }
+
+/* =========================================================
+   A-205 이력 공정표 (timeline.html)
+   ========================================================= */
+
+.tl-summary {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+}
+
+.tl-rate {
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--subtle);
+}
+
+.tl-rate-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.tl-rate-head .stat-label {
+  margin: 0;
+}
+
+.tl-meter {
+  height: 12px;
+  border: 1px solid var(--navy);
+  border-radius: 2px;
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.tl-meter-fill {
+  width: 0;
+  height: 100%;
+  background: var(--navy);
+}
+
+.tl-rate .stat-note {
+  margin: 10px 0 0;
+}
+
+.tl-facts {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.tl-facts > div {
+  display: grid;
+  grid-template-columns: 80px auto 1fr;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tl-facts dt {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.tl-facts dd {
+  margin: 0;
+}
+
+.tl-facts .mono {
+  font-weight: 600;
+}
+
+.tl-facts .muted {
+  font-size: 13px;
+}
+
+.tl-today-text {
+  color: var(--red);
+}
+
+/* 범례 (차트 위) */
+.tl-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.tl-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sw {
+  display: inline-block;
+  width: 24px;
+  height: 10px;
+  border-radius: 1px;
+}
+
+.sw-done { background: var(--navy); }
+.sw-progress { background: linear-gradient(90deg, var(--navy) 50%, rgba(31, 58, 95, 0.3) 50%); }
+.sw-plan { border: 1px dashed var(--navy); }
+.sw-ms { width: auto; height: auto; color: var(--red); font-size: 12px; line-height: 1; }
+.sw-pause-1 {
+  border: 1px solid var(--line);
+  background: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 5px);
+}
+.sw-pause-2 {
+  border: 1px solid var(--line);
+  background: repeating-linear-gradient(135deg, var(--hatch) 0 1px, transparent 1px 2.5px);
+}
+.sw-today { width: 2px; height: 14px; background: var(--red); }
+
+/* 차트 */
+.tl-chart {
+  position: relative;
+}
+
+.tl-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.tl-svg text {
+  font-family: var(--font-body);
+  fill: var(--ink);
+}
+
+.tl-grid-year { stroke: var(--line); stroke-width: 1; }
+.tl-grid-term { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; opacity: 0.7; }
+.tl-tick, .tl-axis-line { stroke: var(--ink-2); stroke-width: 1; }
+.tl-row-line { stroke: var(--line); stroke-width: 1; }
+
+.tl-svg .tl-year {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--ink-2);
+}
+
+.tl-svg .tl-row-name {
+  font-size: 13px;
+  font-weight: 700;
+  dominant-baseline: middle;
+}
+
+.tl-bar,
+.tl-ms,
+.tl-pause {
+  outline: none;
+}
+
+.tl-solid { fill: var(--navy); }
+.tl-future { fill: var(--navy); opacity: 0.3; }
+.tl-open { fill: none; stroke: var(--navy); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.tl-arrow { fill: var(--navy); }
+
+.tl-bar:focus-visible rect,
+.tl-bar:hover rect {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.tl-hatch-1 { stroke: var(--hatch); stroke-width: 1; opacity: 0.55; }
+.tl-hatch-2 { stroke: var(--hatch); stroke-width: 1; opacity: 0.8; }
+.tl-pause.is-l1 { stroke: var(--hatch); stroke-width: 0.6; stroke-opacity: 0.5; }
+.tl-pause:focus-visible { stroke: var(--ink); stroke-width: 1.5; }
+.tl-bracket { fill: none; stroke: var(--hatch); stroke-width: 1; }
+
+.tl-today line { stroke: var(--red); stroke-width: 1.5; }
+
+.tl-leader { fill: none; stroke: var(--hatch); stroke-width: 1; }
+.tl-ms-hit { fill: transparent; }
+.tl-diamond { fill: var(--red); stroke: var(--paper); stroke-width: 1.5; }
+.tl-ms { cursor: default; }
+.tl-ms:hover .tl-diamond,
+.tl-ms:focus-visible .tl-diamond { stroke: var(--ink); }
+
+/* 라벨: 흰 테두리로 빗금·선 위에서도 읽힌다 */
+.tl-svg .tl-label {
+  font-size: 12px;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+.tl-svg .tl-label.is-inside {
+  fill: var(--paper);
+  stroke: none;
+  font-weight: 600;
+}
+
+.tl-svg .tl-ms-label { font-size: 12px; }
+.tl-svg .tl-note { font-size: 11px; fill: var(--ink-2); }
+.tl-svg .tl-pause-label { font-size: 12px; fill: var(--ink-2); }
+.tl-svg .tl-today-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  fill: var(--red);
+}
+
+/* 이름·날짜 안내 */
+.tl-tip {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tl-tip[hidden] {
+  display: none;
+}
+
+.tl-tip span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}

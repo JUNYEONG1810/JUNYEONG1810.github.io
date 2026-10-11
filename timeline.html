@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=20261012.5">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012.7">
 </head>
 <body data-sheet="A-205">
 <header id="site-header" class="site-header"></header>
@@ -24,12 +24,43 @@
   </div>
 
   <section class="section">
-    <div class="pending">공정표 준비 중</div>
+    <div class="tl-summary">
+      <div class="tl-rate">
+        <div class="tl-rate-head">
+          <span class="stat-label">전체 공정률</span>
+          <span class="stat-num" id="tl-rate">—</span>
+        </div>
+        <div class="tl-meter" id="tl-rate-meter" role="meter" aria-label="전체 공정률" aria-valuemin="0" aria-valuemax="100">
+          <div class="tl-meter-fill" id="tl-rate-fill"></div>
+        </div>
+        <p class="stat-note" id="tl-rate-note"></p>
+      </div>
+      <dl class="tl-facts">
+        <div><dt>착공</dt><dd class="mono">2021.03</dd><dd class="muted">입학</dd></div>
+        <div><dt>준공 예정</dt><dd class="mono">2027.08</dd><dd class="muted">졸업</dd></div>
+        <div><dt>오늘</dt><dd class="mono tl-today-text" id="tl-today">—</dd><dd class="muted">방문일 기준</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section">
+    <ul class="tl-legend" aria-label="범례">
+      <li><span class="sw sw-done"></span>실적</li>
+      <li><span class="sw sw-progress"></span>진행 중 (오늘 이후 옅게)</li>
+      <li><span class="sw sw-plan"></span>계획</li>
+      <li><span class="sw sw-ms" aria-hidden="true">◆</span>마일스톤</li>
+      <li><span class="sw sw-pause-1"></span>공사 일시중지 · 정비 기간</li>
+      <li><span class="sw sw-pause-2"></span>공사 일시중지 · 국방 현장 투입</li>
+      <li><span class="sw sw-today"></span>오늘</li>
+    </ul>
+    <div id="timeline" class="tl-chart"></div>
   </section>
 </main>
 
 <footer id="site-footer" class="site-footer"></footer>
 <script src="assets/js/rooms-data.js?v=20261012.5"></script>
 <script src="assets/js/site.js?v=20261012.5"></script>
+<script src="assets/js/timeline-data.js?v=20261012.7"></script>
+<script src="assets/js/timeline.js?v=20261012.7"></script>
 </body>
 </html>
