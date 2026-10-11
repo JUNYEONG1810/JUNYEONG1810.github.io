@@ -57,7 +57,7 @@ SPLITS = [
 ]
 # 호(ARC)로 닫힘 위치를 정할 수 없는 문의 닫힘선
 EXTRA_CLOSURES = [
-    ((52200, 29470), (53150, 29470)),   # 드레스룸 위 양개문 (*U39, 폴리라인 곡선으로 그림)
+    ((52200, 29470), (53150, 29470)),   # 드레스룸 위 여닫이문 (*U39, 폴리라인 곡선으로 그림)
     ((60089, 25750), (60089, 26850)),   # 팬트리 접이문
     ((62479, 25750), (62479, 26850)),   # WIC 접이문
 ]
@@ -69,7 +69,9 @@ MITRE = dict(join_style='mitre', mitre_limit=10)
 X0, Y0 = 49500, 34150           # x' = x − X0, y' = Y0 − y
 SHEET_W, SHEET_H = 24000, 14600
 FRAME_OUT, FRAME_IN = 250, 450  # 도면 테두리 바깥선·안쪽선 여백
-COL_X = 18100                   # 오른쪽 칸 (방위표·축척·표제란) 시작
+COL_X = 18100                   # 오른쪽 칸 (방위표·축척 / 도면 목록 / 표제란) 시작
+DL_TOP, DL_HEAD, DL_ROW = 3300, 480, 540   # 도면 목록 표: 위치, 머리 줄 높이, 행 높이
+TB_TOP = 9900                   # 표제란 위치
 
 # ---------------------------------------------------------------- DXF 읽기
 
@@ -131,23 +133,51 @@ def bounds(ents):
     return min(xs), min(ys), max(xs), max(ys)
 
 
-def flat_paths(ents, step=20):
-    """폴리라인 곡선(bulge)까지 펴서 점 목록으로 (드레스룸 위 양개문용)."""
-    out = []
+def bulge_door(ents):
+    """폴리라인 곡선(bulge)으로 그린 문 블록(*U39)을 다른 문처럼 경첩·닫힌 끝·열린 끝으로 줄인다.
+
+    이 블록은 문짝 하나를 여러 열림 각도로 겹쳐 그린 동적 블록이라,
+    곡선 폴리라인들이 공통으로 시작하는 점 = 경첩, 공통으로 끝나는 점 = 닫힌 끝(맞은편 문틀)이다."""
+    from collections import Counter
+
+    def vkey(v):
+        return (round(v.x), round(v.y))
+
+    polys = [e for e in ents if e.dxftype() == 'LWPOLYLINE' and e.has_arc and e.dxf.layer != 'Defpoints']
+    firsts = Counter(vkey(list(e.vertices_in_wcs())[0]) for e in polys)
+    lasts = Counter(vkey(list(e.vertices_in_wcs())[-1]) for e in polys)
+    c = firsts.most_common(1)[0][0]
+    closed = lasts.most_common(1)[0][0]
+    r = math.dist(c, closed)
+    ux, uy = (closed[0] - c[0]) / r, (closed[1] - c[1]) / r
+    # 문짝이 열리는 쪽: 블록 꼭짓점들이 몰려 있는 쪽의 수직 방향
+    pts = [(v.x, v.y) for e in polys for v in e.vertices_in_wcs()]
+    side = sum((x - c[0]) * -uy + (y - c[1]) * ux for x, y in pts)
+    nx, ny = (-uy, ux) if side > 0 else (uy, -ux)
+    opened = (c[0] + nx * r, c[1] + ny * r)
+    pm = (c[0] + (ux + nx) / math.sqrt(2) * r, c[1] + (uy + ny) / math.sqrt(2) * r)
+    return {'c': c, 'r': r, 'closed': closed, 'open': opened, 'pm': pm, 'closure': None}
+
+
+def counter_outline(ents):
+    """주방 가구 블록에서 싱크대 상판 외곽선 = FUR-K 레이어의 가장 큰 닫힌 외곽선."""
+    best = None
     for e in ents:
-        if e.dxf.layer == 'Defpoints' or e.dxftype() not in ('LINE', 'LWPOLYLINE', 'ARC'):
+        if e.dxftype() != 'LWPOLYLINE' or e.dxf.layer != P + 'FUR-K':
             continue
-        pts = [(v.x, v.y) for v in ezpath.make_path(e).flattening(step)]
-        if len(pts) > 1 and max(math.dist(pts[0], q) for q in pts) > 30:
-            out.append(pts)
-    return out
+        pts = [(v.x, v.y) for v in e.vertices_in_wcs()]
+        if len(pts) >= 4 and (e.closed or math.dist(pts[0], pts[-1]) < 1):
+            poly = Polygon(pts)
+            if poly.is_valid and (best is None or poly.area > best.area):
+                best = poly
+    return best
 
 
 def load():
     doc = ezdxf.readfile(str(DXF))
     msp = doc.modelspace()
     data = {'walls': {k: [] for k in ('con', 'mas', 'dry', 'ins')}, 'core': [], 'core_fill': [],
-            'windows': list(MSP_WINDOWS), 'arcs': [], 'door_paths': [], 'texts': []}
+            'windows': list(MSP_WINDOWS), 'arcs': [], 'bulge_doors': [], 'counters': [], 'texts': []}
 
     for e in msp:
         lay, t = e.dxf.layer, e.dxftype()
@@ -162,7 +192,11 @@ def load():
             elif name in DOOR_BLOCKS:
                 data['arcs'].extend(arcs)
             elif is_window_block and bulged:
-                data['door_paths'].extend(flat_paths(parts))
+                data['bulge_doors'].append(bulge_door(parts))
+            elif lay == P + 'FUR-K':
+                top = counter_outline(parts)
+                if top is not None:
+                    data['counters'].append(top)
             elif lay in CORE_LAYERS:
                 for v in parts:
                     data['core'].extend(segs_of(v))
@@ -305,7 +339,7 @@ def build(data):
     walls = unary_union([con, mas, dry, ins]).buffer(4, **MITRE).buffer(-4, **MITRE)
     win_polys = [box(*w) for w in data['windows']]
 
-    doors = doors_from_arcs(data['arcs'], walls)
+    doors = doors_from_arcs(data['arcs'], walls) + data['bulge_doors']
     closures = [d['closure'] for d in doors if d['closure']] + [LineString(c) for c in EXTRA_CLOSURES]
     splits = [LineString(sp) for sp in SPLITS]
 
@@ -432,7 +466,7 @@ def svg_plan(data, geo, rooms):
     A('</g>')
 
     # #titleblock (오른쪽 칸: 방위표, 축척 막대, 표제란)
-    A(titleblock())
+    A(titleblock(rooms))
 
     # #walls: 외곽선
     A('<g id="walls" aria-hidden="true">')
@@ -468,8 +502,8 @@ def svg_plan(data, geo, rooms):
         c, o = tf(*d['c']), tf(*d['open'])
         A('<line class="door-leaf" x1="%d" y1="%d" x2="%d" y2="%d"/>' % (c + o))
         A('<path class="door-swing" d="%s"/>' % arc_path(d['closed'], d['pm'], d['open'], d['r']))
-    for pts in data['door_paths']:
-        A('<path class="door-swing" d="M%s"/>' % ' L'.join('%d %d' % tf(*p) for p in pts))
+    for top in data['counters']:   # 주방 싱크대 상판 외곽선 (가전·식탁·의자는 넣지 않음)
+        A('<path class="fixture" d="%s"/>' % path_d(top))
     A('</g>')
 
     # #rooms: 방 영역 (활성 방은 링크)
@@ -511,8 +545,7 @@ def svg_plan(data, geo, rooms):
             A('<text class="room-name" x="%d" y="%d">%s</text>' % (x, top + i * size * 1.2, esc(ln)))
         A('<text class="room-size" x="%d" y="%d">%.1f㎡</text>' % (x, top + len(lines) * size * 1.2 - 20, area))
         A('</g>')
-    for name, cls in (('ELEV.홀', 'core-text'), ('ELEV.', 'core-text'), ('(16인승)', 'core-text small'),
-                      ('PS', 'core-text small'), ('EPS/TPS', 'core-text small')):
+    for name, cls in (('ELEV.홀', 'core-text'), ('PS', 'core-text small'), ('EPS/TPS', 'core-text small')):
         if name in texts:
             x, y = tf(*texts[name])
             A('<text class="%s" x="%d" y="%d">%s</text>' % (cls, x, y, esc(name)))
@@ -521,25 +554,55 @@ def svg_plan(data, geo, rooms):
     return '\n'.join(out), placed
 
 
-def titleblock():
-    x1, x2 = COL_X + 350, SHEET_W - FRAME_IN - 350
-    cx = (x1 + x2) // 2
-    o = ['<g id="titleblock" aria-hidden="true">']
-    # 방위표 (위 = 북)
-    ny = 2600
-    o.append('<circle class="tb-line" cx="%d" cy="%d" r="650"/>' % (cx, ny))
+def titleblock(rooms):
+    left, right = COL_X, SHEET_W - FRAME_IN
+    o = ['<g id="titleblock">']
+
+    # 위: 방위표(위 = 북) + 축척 막대 0–1–3m 나란히
+    o.append('<g aria-hidden="true">')
+    nx, ny = left + 1000, 1600
+    o.append('<circle class="tb-line" cx="%d" cy="%d" r="560"/>' % (nx, ny))
     o.append('<path class="north" d="M%d %d L%d %d L%d %d L%d %dZ"/>' % (
-        cx, ny - 850, cx + 260, ny + 420, cx, ny + 230, cx - 260, ny + 420))
-    o.append('<text class="tb-n" x="%d" y="%d">N</text>' % (cx, ny - 1000))
-    # 축척 막대 0–1–3m
-    sy, sx = 9150, cx - 1500
+        nx, ny - 740, nx + 230, ny + 370, nx, ny + 200, nx - 230, ny + 370))
+    o.append('<text class="tb-n" x="%d" y="%d">N</text>' % (nx, ny - 860))
+    sx, sy = left + 2100, 1640
+    o.append('<text class="tb-key" x="%d" y="%d">SCALE BAR</text>' % (sx, sy - 220))
     o.append('<rect class="scale-a" x="%d" y="%d" width="1000" height="140"/>' % (sx, sy))
     o.append('<rect class="scale-b" x="%d" y="%d" width="2000" height="140"/>' % (sx + 1000, sy))
     for v, lab in ((0, '0'), (1000, '1'), (3000, '3m')):
         o.append('<text class="tb-scale" x="%d" y="%d">%s</text>' % (sx + v, sy + 420, lab))
-    o.append('<text class="tb-key" x="%d" y="%d">SCALE BAR</text>' % (sx, sy - 160))
-    # 표제란
-    ty, th = 9900, SHEET_H - FRAME_IN - 9900
+    o.append('<line class="tb-line" x1="%d" y1="%d" x2="%d" y2="%d"/>' % (left, DL_TOP - 450, right, DL_TOP - 450))
+    o.append('</g>')
+
+    # 가운데: 도면 목록 (A-101 + 상세 페이지 A-201~A-209, rooms-data.js 순서)
+    rows = [('A-101', '단위세대 평면도', None)]
+    rows += [(r['sheet'], r['label'], r['href']) for r in rooms if r.get('type') == 'active']
+    split = left + 1550
+    bottom = DL_TOP + DL_HEAD + DL_ROW * len(rows)
+    o.append('<g class="drawing-list">')
+    o.append('<g aria-hidden="true">')
+    o.append('<text class="tb-key" x="%d" y="%d">DRAWING LIST</text>' % (left + 200, DL_TOP - 130))
+    o.append('<rect class="tb-box" x="%d" y="%d" width="%d" height="%d"/>' % (left, DL_TOP, right - left, bottom - DL_TOP))
+    o.append('<text class="dl-head" x="%d" y="%d">도면번호</text>' % (left + 200, DL_TOP + DL_HEAD / 2))
+    o.append('<text class="dl-head" x="%d" y="%d">도면명</text>' % (split + 200, DL_TOP + DL_HEAD / 2))
+    o.append('<line class="tb-line" x1="%d" y1="%d" x2="%d" y2="%d"/>' % (split, DL_TOP, split, bottom))
+    for i in range(len(rows)):
+        y = DL_TOP + DL_HEAD + i * DL_ROW
+        o.append('<line class="tb-line" x1="%d" y1="%d" x2="%d" y2="%d"/>' % (left, y, right, y))
+    o.append('</g>')
+    for i, (no, name, href) in enumerate(rows):
+        y = DL_TOP + DL_HEAD + i * DL_ROW
+        cells = ('<rect class="dl-hit" x="%d" y="%d" width="%d" height="%d"/>'
+                 '<text class="dl-no" x="%d" y="%d">%s</text><text class="dl-name" x="%d" y="%d">%s</text>'
+                 % (left, y, right - left, DL_ROW, left + 200, y + DL_ROW // 2, no, split + 200, y + DL_ROW // 2, esc(name)))
+        if href:
+            o.append('<a class="dl-link" href="%s" aria-label="%s %s">%s</a>' % (href, no, esc(name), cells))
+        else:
+            o.append('<g class="dl-current" aria-current="page">%s</g>' % cells)
+    o.append('</g>')
+
+    # 아래: 표제란
+    ty, th = TB_TOP, SHEET_H - FRAME_IN - TB_TOP
     rows = [
         (('PROJECT', 'LEE JUNYOUNG · 84A', 'tb-val strong', None),),
         (('TITLE', '단위세대 평면도 (84A)', 'tb-val', None),),
@@ -547,8 +610,7 @@ def titleblock():
         (('DATE', '—', 'tb-val mono', 'tb-date'), ('DRAWN', '이준영', 'tb-val', None)),
     ]
     rh = th / len(rows)
-    left = COL_X
-    right = SHEET_W - FRAME_IN
+    o.append('<g class="tb-table">')
     o.append('<rect class="tb-box" x="%d" y="%d" width="%d" height="%d"/>' % (left, ty, right - left, th))
     for i, row in enumerate(rows):
         y = ty + i * rh
@@ -563,7 +625,9 @@ def titleblock():
             idattr = ' id="%s"' % vid if vid else ''
             o.append('<text class="%s"%s x="%d" y="%d">%s</text>' % (cls, idattr, x + 200, y + rh - 260, esc(val)))
     o.append('</g>')
+    o.append('</g>')
     return '\n'.join(o)
+
 
 # ---------------------------------------------------------------- 확인용 그림
 

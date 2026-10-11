@@ -165,6 +165,58 @@
   stroke-width: 0.6px;
 }
 
+/* 주방 싱크대 상판 외곽선 (얇게) */
+.fixture {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 0.6px;
+}
+
+/* ---------- 도면 목록 (DRAWING LIST) ---------- */
+
+.plan .dl-head {
+  font-size: 170px;
+  fill: var(--ink-2);
+  dominant-baseline: middle;
+}
+
+.plan .dl-no,
+.plan .dl-name {
+  font-size: 220px;
+  dominant-baseline: middle;
+}
+
+.plan .dl-no {
+  font-family: var(--font-mono);
+}
+
+.dl-hit {
+  fill: transparent;
+}
+
+.dl-link {
+  outline: none;
+}
+
+.plan .dl-link text {
+  fill: var(--navy);
+}
+
+.plan .dl-link:hover text {
+  text-decoration: underline;
+}
+
+.dl-link:focus-visible .dl-hit {
+  fill: var(--navy-soft);
+  stroke: var(--navy);
+  stroke-width: 1.5px;
+}
+
+.plan .dl-current text {
+  font-weight: 700;
+  fill: var(--ink);
+}
+
 /* ---------- 방 ---------- */
 
 .room-area {
