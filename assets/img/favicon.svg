@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- 작은 평면도: 바깥벽 + 칸막이 + 문 열림 호 -->
+  <rect x="1" y="1" width="30" height="30" rx="4" fill="#FFFFFF"/>
+  <g fill="none" stroke="#1F3A5F" stroke-linecap="square">
+    <path d="M4 4 H28 V28 H4 Z" stroke-width="3"/>
+    <path d="M15 4 V13 M4 17 H11 M15 17 H28 M20 17 V28" stroke-width="2"/>
+    <path d="M15 17 A4 4 0 0 0 11 13" stroke-width="1.2"/>
+  </g>
+</svg>
