@@ -141,7 +141,14 @@
     }
   }
 
-  window.Site = { monthsSince: monthsSince, formatDuration: formatDuration };
+  /* Date → 'YYYY.MM.DD' */
+  function formatDate(d) {
+    var m = d.getMonth() + 1;
+    var day = d.getDate();
+    return d.getFullYear() + '.' + (m < 10 ? '0' : '') + m + '.' + (day < 10 ? '0' : '') + day;
+  }
+
+  window.Site = { monthsSince: monthsSince, formatDuration: formatDuration, formatDate: formatDate };
 
   var header = document.getElementById('site-header');
   if (header) buildHeader(header);

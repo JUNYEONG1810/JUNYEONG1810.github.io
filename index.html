@@ -9,8 +9,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=20261012.2">
-<link rel="stylesheet" href="assets/css/plan.css?v=20261012.4">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012.5">
+<link rel="stylesheet" href="assets/css/plan.css?v=20261012.5">
+<script>
+  /* 도면이 그려지는 효과: 같은 방문 중 처음이고 '움직임 줄이기'가 아니면 첫 화면 전에 재생 표시 (plan.js가 끝냄) */
+  try {
+    if (!sessionStorage.getItem('plan-drawn') && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('plan-play');
+    }
+  } catch (e) {}
+</script>
 </head>
 <body data-sheet="A-101">
 <header id="site-header" class="site-header"></header>
@@ -29,15 +37,15 @@
 </g>
 <g id="titleblock">
 <g aria-hidden="true">
-<circle class="tb-line" cx="19100" cy="1600" r="560"/>
-<path class="north" d="M19100 860 L19330 1970 L19100 1800 L18870 1970Z"/>
-<text class="tb-n" x="19100" y="740">N</text>
-<text class="tb-key" x="20200" y="1420">SCALE BAR</text>
-<rect class="scale-a" x="20200" y="1640" width="1000" height="140"/>
-<rect class="scale-b" x="21200" y="1640" width="2000" height="140"/>
-<text class="tb-scale" x="20200" y="2060">0</text>
-<text class="tb-scale" x="21200" y="2060">1</text>
-<text class="tb-scale" x="23200" y="2060">3m</text>
+<circle class="tb-line" cx="19100" cy="1850" r="560"/>
+<path class="north" d="M19100 1110 L19330 2220 L19100 2050 L18870 2220Z"/>
+<text class="tb-n" x="19100" y="990">N</text>
+<text class="tb-key" x="20200" y="1670">SCALE BAR</text>
+<rect class="scale-a" x="20200" y="1890" width="1000" height="140"/>
+<rect class="scale-b" x="21200" y="1890" width="2000" height="140"/>
+<text class="tb-scale" x="20200" y="2310">0</text>
+<text class="tb-scale" x="21200" y="2310">1</text>
+<text class="tb-scale" x="23200" y="2310">3m</text>
 <line class="tb-line" x1="18100" y1="2850" x2="23550" y2="2850"/>
 </g>
 <g class="drawing-list">
@@ -279,8 +287,8 @@
 <g id="room-utility" class="room" data-type="active"><a href="hobby.html" class="room-link" aria-label="다용도실 · 취미 — 헬스, 구기 종목, 영화"><path class="room-area" d="M10719 4472 12229 4472 12229 6052 11759 6052 11759 6972 10719 6972 10719 6152 10729 6152 10729 5012 10719 5012Z"/></a></g>
 <g id="room-dress" class="room" data-type="active"><a href="license.html" class="room-link" aria-label="드레스룸 · 자격·어학 — 토익 800 외 2개"><path class="room-area" d="M2759 7572 2759 7522 2229 7522 2229 6802 2299 6802 2299 4782 2794 4782 2794 4700 3564 4700 3564 4782 4049 4782 4049 7522 3579 7522 3579 7572Z"/></a></g>
 <g id="room-entrance" class="room" data-type="active"><a href="contact.html" class="room-link" aria-label="현관 · 연락처 — 이메일 복사하기"><path class="room-area" d="M12959 8752 12959 8400 12999 8400 12999 7092 13069 7062 13069 6842 13079 6842 13079 6763 14199 6762 14199 6842 14209 6842 14209 7062 14629 7062 14629 8702 14219 8702 14219 8752Z"/></a></g>
-<g id="room-bath1" class="room" data-type="bath" aria-hidden="true"><path class="room-area" d="M14809 9022 14749 9022 14749 7562 16319 7562 16319 9942 14809 9942Z"/></g>
-<g id="room-bath2" class="room" data-type="bath" aria-hidden="true"><path class="room-area" d="M4229 7712 4169 7712 4169 6242 5339 6242 5339 7152 5839 7152 5839 8622 4229 8622Z"/></g>
+<g id="room-bath1" class="room" data-type="bath" role="button" tabindex="0" aria-label="욕실1"><path class="room-area" d="M14809 9022 14749 9022 14749 7562 16319 7562 16319 9942 14809 9942Z"/></g>
+<g id="room-bath2" class="room" data-type="bath" role="button" tabindex="0" aria-label="욕실2"><path class="room-area" d="M4229 7712 4169 7712 4169 6242 5339 6242 5339 7152 5839 7152 5839 8622 4229 8622Z"/></g>
 <g id="room-pantry" class="room" data-type="inactive" aria-hidden="true"><path class="room-area" d="M10609 7412 10709 7412 10709 7067 11739 7062 11739 8602 10709 8602 10709 8282 10609 8282Z"/></g>
 <g id="room-wic" class="room" data-type="inactive" aria-hidden="true"><path class="room-area" d="M11839 7062 12859 7062 12859 7412 12959 7412 12959 8322 12859 8322 12859 8602 11839 8602Z"/></g>
 <g id="room-powder" class="room" data-type="inactive" aria-hidden="true"><path class="room-area" d="M3579 7572 3579 7622 4049 7622 4049 7822 4189 7822 4189 8622 4049 8622 4049 8772 2719 8772 2719 8722 2229 8722 2229 7622 2759 7622 2759 7572Z"/></g>
@@ -352,7 +360,8 @@
 </svg>
 <!-- PLAN:END -->
 </main>
-<script src="assets/js/rooms-data.js?v=20261012.2"></script>
-<script src="assets/js/site.js?v=20261012.2"></script>
+<script src="assets/js/rooms-data.js?v=20261012.5"></script>
+<script src="assets/js/site.js?v=20261012.5"></script>
+<script src="assets/js/plan.js?v=20261012.5"></script>
 </body>
 </html>

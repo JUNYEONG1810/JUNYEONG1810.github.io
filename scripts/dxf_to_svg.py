@@ -525,8 +525,12 @@ def svg_plan(data, geo, rooms):
             A('<g id="%s" class="room" data-type="active"><a href="%s" class="room-link" aria-label="%s">'
               '<path class="room-area" d="%s"/></a></g>' % (room['id'], room['href'], esc(label), d))
         else:
-            A('<g id="%s" class="room" data-type="%s" aria-hidden="true"><path class="room-area" d="%s"/></g>'
-              % (room['id'], kind, d))
+            if kind == 'bath':   # 욕실: 누르면 "사용 중입니다" 말풍선 (키보드로도)
+                A('<g id="%s" class="room" data-type="bath" role="button" tabindex="0" aria-label="%s">'
+                  '<path class="room-area" d="%s"/></g>' % (room['id'], esc(room['name']), d))
+            else:
+                A('<g id="%s" class="room" data-type="%s" aria-hidden="true"><path class="room-area" d="%s"/></g>'
+                  % (room['id'], kind, d))
     A('</g>')
 
     # #labels: 이름표 + 면적
@@ -560,12 +564,12 @@ def titleblock(rooms):
 
     # 위: 방위표(위 = 북) + 축척 막대 0–1–3m 나란히
     o.append('<g aria-hidden="true">')
-    nx, ny = left + 1000, 1600
+    nx, ny = left + 1000, 1850   # N 글자가 테두리에 붙지 않게 위 여백을 둔다
     o.append('<circle class="tb-line" cx="%d" cy="%d" r="560"/>' % (nx, ny))
     o.append('<path class="north" d="M%d %d L%d %d L%d %d L%d %dZ"/>' % (
         nx, ny - 740, nx + 230, ny + 370, nx, ny + 200, nx - 230, ny + 370))
     o.append('<text class="tb-n" x="%d" y="%d">N</text>' % (nx, ny - 860))
-    sx, sy = left + 2100, 1640
+    sx, sy = left + 2100, 1890
     o.append('<text class="tb-key" x="%d" y="%d">SCALE BAR</text>' % (sx, sy - 220))
     o.append('<rect class="scale-a" x="%d" y="%d" width="1000" height="140"/>' % (sx, sy))
     o.append('<rect class="scale-b" x="%d" y="%d" width="2000" height="140"/>' % (sx + 1000, sy))
