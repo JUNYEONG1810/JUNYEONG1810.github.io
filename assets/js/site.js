@@ -1,4 +1,4 @@
-/* 공통 머리말·메뉴·꼬리말 주입
+/* 공통 머리말·메뉴·꼬리말 주입 + 날짜 계산 + 이메일 복사
    - 각 페이지 <body data-sheet="A-20x">로 현재 도면번호를 알려 준다 (홈은 A-101).
    - <header id="site-header">, <footer id="site-footer"> 자리에 내용을 채운다.
    - rooms-data.js(ROOMS)를 먼저 불러와야 한다. */
@@ -68,9 +68,87 @@
     target.appendChild(block);
   }
 
+  /* ---------- 날짜 계산 ---------- */
+
+  /* 'YYYY.MM'부터 오늘까지 지난 개월 수 (시작 달은 0개월) */
+  function monthsSince(ym, today) {
+    var p = ym.split('.');
+    var d = today || new Date();
+    return (d.getFullYear() - Number(p[0])) * 12 + (d.getMonth() + 1 - Number(p[1]));
+  }
+
+  /* 개월 수 → 'n년 n개월' / 'n년' / 'n개월' */
+  function formatDuration(months) {
+    var y = Math.floor(months / 12);
+    var m = months % 12;
+    if (y && m) return y + '년 ' + m + '개월';
+    if (y) return y + '년';
+    return m + '개월';
+  }
+
+  /* <span data-since="2023.04"> → '3년 6개월' 처럼 채운다 */
+  function fillDurations() {
+    var nodes = document.querySelectorAll('[data-since]');
+    for (var i = 0; i < nodes.length; i++) {
+      var months = monthsSince(nodes[i].getAttribute('data-since'));
+      if (months >= 0) nodes[i].textContent = formatDuration(months);
+    }
+  }
+
+  /* ---------- 이메일 복사 ----------
+     주소를 소스에 통째로 두지 않는다. 버튼을 누를 때만 합쳐 클립보드에 복사하고 화면에는 표시하지 않는다. */
+  var MAIL_ID = ['pear', '1810'];
+  var MAIL_DOMAIN = ['naver', 'com'];
+
+  function mailAddress() {
+    return MAIL_ID.join('') + String.fromCharCode(64) + MAIL_DOMAIN.join('.');
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+      document.body.removeChild(ta);
+      if (ok) resolve(); else reject();
+    });
+  }
+
+  function bindEmailCopy() {
+    var buttons = document.querySelectorAll('[data-copy-email]');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].addEventListener('click', function () {
+        var status = document.getElementById(this.getAttribute('aria-describedby'));
+        copyText(mailAddress()).then(function () {
+          if (status) status.textContent = '복사되었습니다';
+        }, function () {
+          if (status) status.textContent = '복사하지 못했습니다. 다시 눌러 주세요.';
+        });
+        if (status) {
+          clearTimeout(status._t);
+          status._t = setTimeout(function () { status.textContent = ''; }, 2500);
+        }
+      });
+    }
+  }
+
+  window.Site = { monthsSince: monthsSince, formatDuration: formatDuration };
+
   var header = document.getElementById('site-header');
   if (header) buildHeader(header);
 
   var footer = document.getElementById('site-footer');
   if (footer) buildFooter(footer);
+
+  fillDurations();
+  bindEmailCopy();
 })();

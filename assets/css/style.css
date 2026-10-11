@@ -192,6 +192,249 @@ h1, h2, h3 {
   letter-spacing: -0.01em;
 }
 
+/* ---------- 상세 페이지 본문 부품 ---------- */
+
+.section {
+  margin-top: 64px;
+}
+
+.section:first-of-type {
+  margin-top: 0;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.section-head h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.section-head .sub {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.lead {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.prose p {
+  margin: 0 0 12px;
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.section-text {
+  margin: 8px 0 24px;
+  color: var(--ink-2);
+}
+
+/* 정보 목록: 항목명 | 내용 */
+.info-list {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px 24px;
+  margin: 0;
+}
+
+.info-list dt {
+  color: var(--ink-2);
+  font-size: 14px;
+  padding-top: 2px;
+}
+
+.info-list dd {
+  margin: 0;
+}
+
+/* 태그 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tags li {
+  padding: 3px 12px;
+  border: 1px solid var(--navy);
+  border-radius: var(--radius-sm);
+  background: var(--navy-soft);
+  color: var(--navy);
+  font-size: 14px;
+}
+
+/* 숫자 카드 */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  padding: 24px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--subtle);
+}
+
+.stat-num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--navy);
+}
+
+.stat-label {
+  display: block;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.stat-note {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* 카드 */
+.card-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+
+.card h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.card p {
+  margin: 0;
+}
+
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.card-meta .date {
+  font-family: var(--font-mono);
+  color: var(--navy);
+  font-weight: 600;
+}
+
+/* 가로 카드: 왼쪽 글, 오른쪽 이미지 */
+.card.wide {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  align-items: start;
+}
+
+.card.wide .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.img-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+/* 번호 목록 카드 (배운 점 등) */
+.point-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: point;
+}
+
+.point-list li {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 16px;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  counter-increment: point;
+}
+
+.point-list li::before {
+  content: counter(point, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.point-list strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* 버튼(동작용) */
+button.btn {
+  font: inherit;
+  font-size: 15px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.btn.btn-solid {
+  background: var(--navy);
+  color: var(--paper);
+}
+
+.btn.btn-solid:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.copy-status {
+  margin-left: 12px;
+  font-size: 14px;
+  color: var(--navy);
+}
+
 /* 이미지 자리: 점선 테두리 4:3 상자 */
 .img-ph {
   display: flex;
@@ -292,4 +535,26 @@ h1, h2, h3 {
 
 .btn:hover {
   background: var(--navy-soft);
+}
+
+/* 숫자 뒤 단위(개월, 년, 점, 급)는 본문 글꼴로 작게 */
+.stat-num small {
+  margin-left: 2px;
+  font-family: var(--font-body);
+  font-size: 0.55em;
+  font-weight: 600;
+}
+
+.card-kicker {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.license-card {
+  gap: 4px;
+  min-height: 160px;
+}
+
+.license-card .stat-num {
+  margin-top: auto;
 }

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap">
-<link rel="stylesheet" href="assets/css/style.css?v=20261012">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012.2">
 </head>
 <body data-sheet="A-209">
 <header id="site-header" class="site-header"></header>
@@ -23,10 +23,33 @@
     <h1>연락처</h1>
   </div>
 
+  <section class="section">
+    <p class="lead">방문해 주셔서 감사합니다.</p>
+  </section>
+
+  <section class="section">
+    <div class="card-grid cols-2">
+      <article class="card">
+        <h3>이메일</h3>
+        <p class="muted">버튼을 누르면 이메일 주소가 클립보드에 복사됩니다.</p>
+        <div>
+          <button type="button" class="btn btn-solid" data-copy-email aria-describedby="copy-status">이메일 복사</button>
+          <span id="copy-status" class="copy-status" role="status" aria-live="polite"></span>
+        </div>
+      </article>
+      <article class="card">
+        <h3>GitHub</h3>
+        <p class="muted">github.com/JUNYEONG1810</p>
+        <div>
+          <a class="btn" href="https://github.com/JUNYEONG1810" target="_blank" rel="noopener">GitHub 열기 ↗</a>
+        </div>
+      </article>
+    </div>
+  </section>
 </main>
 
 <footer id="site-footer" class="site-footer"></footer>
-<script src="assets/js/rooms-data.js?v=20261012"></script>
-<script src="assets/js/site.js?v=20261012"></script>
+<script src="assets/js/rooms-data.js?v=20261012.2"></script>
+<script src="assets/js/site.js?v=20261012.2"></script>
 </body>
 </html>
