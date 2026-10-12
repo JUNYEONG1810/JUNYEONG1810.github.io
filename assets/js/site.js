@@ -141,6 +141,40 @@
     }
   }
 
+  /* ---------- 사진 크게 보기 ----------
+     .photo-link를 누르면 화면 가운데 큰 사진. 사진 바깥 클릭·닫기 버튼·Esc로 닫는다.
+     <dialog>를 못 쓰는 브라우저에서는 링크가 사진 파일을 그대로 연다. */
+  function bindLightbox() {
+    var links = document.querySelectorAll('.photo-link');
+    if (!links.length || typeof HTMLDialogElement === 'undefined') return;
+
+    var dlg = document.createElement('dialog');
+    dlg.className = 'lightbox';
+    dlg.setAttribute('aria-label', '사진 크게 보기');
+    dlg.innerHTML = '<div class="lightbox-inner"><img alt=""><p class="lightbox-caption"></p></div>' +
+      '<button type="button" class="lightbox-close" aria-label="닫기">×</button>';
+    document.body.appendChild(dlg);
+    var big = dlg.querySelector('img');
+    var cap = dlg.querySelector('.lightbox-caption');
+
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', function (e) {
+        var thumb = this.querySelector('img');
+        e.preventDefault();
+        big.src = this.getAttribute('href');
+        big.alt = thumb.alt;
+        big.setAttribute('width', thumb.getAttribute('width'));
+        big.setAttribute('height', thumb.getAttribute('height'));
+        cap.textContent = thumb.alt;
+        dlg.showModal();
+      });
+    }
+
+    dlg.addEventListener('click', function (e) {
+      if (e.target !== big && e.target !== cap) dlg.close();
+    });
+  }
+
   /* Date → 'YYYY.MM.DD' */
   function formatDate(d) {
     var m = d.getMonth() + 1;
@@ -158,4 +192,5 @@
 
   fillDurations();
   bindEmailCopy();
+  bindLightbox();
 })();
