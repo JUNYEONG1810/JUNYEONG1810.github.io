@@ -530,6 +530,26 @@ h1, h2, h3 {
   font-weight: 700;
 }
 
+/* 소개 영역: 증명사진(왼쪽) + 글(오른쪽, 사진 높이 기준 세로 가운데) */
+.profile {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.profile-photo {
+  display: block;
+  width: 190px;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.profile-body .lead {
+  margin-bottom: 20px;
+}
+
 /* 헬스: 기간을 크게 (자동 계산) */
 .big-duration strong {
   display: block;
